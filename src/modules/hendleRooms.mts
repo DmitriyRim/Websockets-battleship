@@ -1,4 +1,5 @@
 import { activeUsers, roomsDB } from "../fakeDB/usersDB.mjs";
+import { responseToString } from "../utils/utils.mjs";
 import { TypeAction } from "./hendleMessage.mjs";
 import { randomUUID } from 'node:crypto';
 import { WebSocket } from 'ws';
@@ -14,9 +15,9 @@ export const createRoom = (ws: WebSocket) => {
     })
 }
 export const updateRooms = () => {
-    return JSON.stringify({
-        type: TypeAction.UPDATE_ROOM,
-        data: JSON.stringify(roomsDB),
-        id: 0,
-    })
+    return responseToString(TypeAction.UPDATE_ROOM, roomsDB)
+}
+
+export const addUserToRoom = () => {
+
 }

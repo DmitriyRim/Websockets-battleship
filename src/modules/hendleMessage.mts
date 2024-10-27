@@ -8,6 +8,7 @@ export enum TypeAction {
   CREATE_ROOM = 'create_room',
   UPDATE_WINNERS = 'update_winners',
   UPDATE_ROOM = 'update_room',
+  ADD_USER_TO_ROOM = 'add_user_to_room'
 }
 
 export const message = (ws: WebSocket, data: RawData): void => {
@@ -23,6 +24,8 @@ export const message = (ws: WebSocket, data: RawData): void => {
     case TypeAction.CREATE_ROOM:
       createRoom(ws);
       ws.send(updateRooms());
+      break;
+    case TypeAction.ADD_USER_TO_ROOM:
       break;
     // default:
     //   return '';

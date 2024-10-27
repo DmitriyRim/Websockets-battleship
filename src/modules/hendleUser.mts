@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { activeUsers, usersDB, winnersDB } from '../fakeDB/usersDB.mjs';
 import { TypeAction } from './hendleMessage.mjs';
 import { WebSocket } from 'ws';
+import { responseToString } from '../utils/utils.mjs';
 
 type AuthUserData = {
   name: string;
@@ -39,12 +40,7 @@ export const authorizationUser = (request: string, ws: WebSocket) => {
       errorText: 'the password is incorrect',
     };
   }
-
-  return JSON.stringify({
-    type: TypeAction.REG,
-    data: JSON.stringify(response),
-    id: 0,
-  });
+  return responseToString(TypeAction.REG, response)
 };
 
 export const createUser = (data: AuthUserData) => {
@@ -55,9 +51,5 @@ export const createUser = (data: AuthUserData) => {
 };
 
 export const updateWinners = () => {
-  return JSON.stringify({
-    type: TypeAction.UPDATE_WINNERS,
-    data: JSON.stringify(winnersDB),
-    id: 0,
-  });
+  return responseToString(TypeAction.UPDATE_WINNERS, winnersDB)
 };
