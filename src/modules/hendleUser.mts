@@ -1,12 +1,14 @@
 import { randomUUID } from 'node:crypto';
-import { usersDB } from '../fakeDB/usersDB.mjs';
+import { activeUsers, usersDB, winnersDB } from '../fakeDB/usersDB.mjs';
+import { TypeAction } from './hendleMessage.mjs';
+import { WebSocket } from 'ws';
 
 type AuthUserData = {
   name: string;
   password: string;
 };
 
-export const authorizationUser = (request: string) => {
+export const authorizationUser = (request: string, ws: WebSocket) => {
   const data = JSON.parse(request);
   let user = usersDB.find((user) => user.name === data.name);
   let response = {};
@@ -23,6 +25,12 @@ export const authorizationUser = (request: string) => {
       error: false,
       errorText: '',
     };
+
+    activeUsers.set(ws, {
+      name: data.name,
+      index: user.index,
+    })
+
   } else {
     response = {
       name: data.name,
@@ -32,12 +40,24 @@ export const authorizationUser = (request: string) => {
     };
   }
 
-  return JSON.stringify({ type: 'reg', data: JSON.stringify(response), id: 0 });
+  return JSON.stringify({
+    type: TypeAction.REG,
+    data: JSON.stringify(response),
+    id: 0,
+  });
 };
 
 export const createUser = (data: AuthUserData) => {
   usersDB.push({
     ...data,
     index: randomUUID(),
+  });
+};
+
+export const updateWinners = () => {
+  return JSON.stringify({
+    type: TypeAction.UPDATE_WINNERS,
+    data: JSON.stringify(winnersDB),
+    id: 0,
   });
 };
