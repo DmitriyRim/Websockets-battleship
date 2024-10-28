@@ -30,8 +30,7 @@ export const authorizationUser = (request: string, ws: WebSocket) => {
     activeUsers.set(ws, {
       name: data.name,
       index: user.index,
-    })
-
+    });
   } else {
     response = {
       name: data.name,
@@ -40,7 +39,7 @@ export const authorizationUser = (request: string, ws: WebSocket) => {
       errorText: 'the password is incorrect',
     };
   }
-  return responseToString(TypeAction.REG, response)
+  return responseToString(TypeAction.REG, response);
 };
 
 export const createUser = (data: AuthUserData) => {
@@ -51,5 +50,5 @@ export const createUser = (data: AuthUserData) => {
 };
 
 export const updateWinners = () => {
-  return responseToString(TypeAction.UPDATE_WINNERS, winnersDB)
+  return responseToString(TypeAction.UPDATE_WINNERS, winnersDB);
 };
