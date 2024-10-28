@@ -41,6 +41,7 @@ export const usersDB: User[] = [];
 export const winnersDB: Winner[] = [];
 export const roomsDB: Room[] = [];
 export const activeUsers = new Map();
+export const activeGameID = new Map();
 export const activeGame: {
   [key: string | number]: Ships[];
 } = {};

@@ -1,4 +1,4 @@
-import { activeGame, activeUsers, roomsDB } from '../fakeDB/usersDB.mjs';
+import { activeGame, activeGameID, activeUsers, roomsDB } from '../fakeDB/usersDB.mjs';
 import { responseToString } from '../utils/utils.mjs';
 import { TypeAction } from './hendleMessage.mjs';
 import { randomUUID } from 'node:crypto';
@@ -33,6 +33,8 @@ export const addShips = (ws: WebSocket, data: string) => {
   const userShips = JSON.parse(data);
   const { gameId, ships, indexPlayer } = userShips;
 
+  activeGameID.set(ws, gameId);
+
   if (!Object.keys(activeGame).includes(gameId)) {
     activeGame[`${gameId}`] = [
       {
@@ -42,34 +44,37 @@ export const addShips = (ws: WebSocket, data: string) => {
       },
     ];
   } else {
+
     activeGame[`${gameId}`].push({
       indexPlayer,
       ships,
       ws,
     });
-    activeGame[`${gameId}`].forEach((userShips) => {
+
+    const users = activeGame[`${gameId}`].map((userShips) => {
       userShips.ws.send(
         responseToString(TypeAction.START_GAME, {
           ships: userShips.ships,
           currentPlayerIndex: userShips.indexPlayer,
         }),
       );
+      return userShips.indexPlayer
     });
+
+    turn(ws, users[Math.round(Math.random())])
   }
+
 };
 
-// type Ships = {
-//     gameId: number | string,
-//     ships: [
-//                 {
-//                     position: {
-//                         x: number,
-//                         y: number,
-//                     },
-//                     direction: boolean,
-//                     length: number,
-//                     type: "small"|"medium"|"large"|"huge",
-//                 }
-//             ],
-//     indexPlayer: number | string, /* id of the player in the current game session */
-// }
+export const turn = (ws: WebSocket, currentPlayer: string | number) => {
+    const gameId = activeGameID.get(ws);
+    const usersId = activeGame[`${gameId}`].map(user => user.indexPlayer);
+    const nextPlayer = currentPlayer === usersId[0] ? usersId[1] : usersId[0];
+ 
+    activeGame[`${gameId}`].forEach((userShips) => {
+        userShips.ws.send(
+          responseToString(TypeAction.TURN, { currentPlayer: nextPlayer }),
+        );
+    });
+    console.log(responseToString(TypeAction.TURN, { currentPlayer: nextPlayer }))
+}
