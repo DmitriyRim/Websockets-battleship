@@ -9,7 +9,7 @@ wss.on('connection', function connection(ws) {
   console.log('WebSocket server Connected');
   ws.on('error', console.error);
 
-  ws.on('message', (data) => message(ws, data));
+  ws.on('message', (data) => message(ws, wss, data));
 
   ws.send(JSON.stringify('s'));
 });

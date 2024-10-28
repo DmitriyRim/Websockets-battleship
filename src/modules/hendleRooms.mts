@@ -15,9 +15,18 @@ export const createRoom = (ws: WebSocket) => {
     })
 }
 export const updateRooms = () => {
-    return responseToString(TypeAction.UPDATE_ROOM, roomsDB)
+    const availableRooms = roomsDB.filter(room => room.roomUsers.length < 2)
+    return responseToString(TypeAction.UPDATE_ROOM, availableRooms)
 }
 
-export const addUserToRoom = () => {
+export const addUserToRoom = (ws: WebSocket, data: string): boolean => {
+    const indexRoom = JSON.parse(data).indexRoom;
+    const room = roomsDB.find(item => item.roomId === indexRoom);
+    const activeUser = activeUsers.get(ws);
 
+    if(room?.roomUsers[0].index !== activeUser.index) {
+        room?.roomUsers.push(activeUser);
+        return true;
+    }
+    return false;
 }
